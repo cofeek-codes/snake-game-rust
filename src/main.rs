@@ -1,3 +1,4 @@
+use rand::Rng;
 use sfml::{
     graphics::{
         CircleShape, Color, RenderTarget, RenderWindow, Shape, Sprite, Texture, Transformable,
@@ -18,14 +19,20 @@ fn create_coin() -> sfml::SfBox<Texture> {
     let texture = Texture::from_file(file_path).expect("error creating texture");
     texture
 }
-fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
-    // default
-    // move right
-    // snake.set_position(Vector2f {
-    //     x: snake.position().x + 0.1,
-    //     y: snake.position().y,
-    // });
 
+fn compute_random_postion(screen_size: (i32, i32)) -> sfml::system::Vector2<f32> {
+    let screen_range = (
+        screen_size.0 as f32, // window.view().viewport().width,
+        screen_size.1 as f32, // window.view().viewport().height,
+    );
+    let rand_pos_x: f32 = rand::thread_rng().gen_range(0.0..screen_range.0);
+    let rand_pos_y: f32 = rand::thread_rng().gen_range(0.0..screen_range.1);
+
+    let new_position = Vector2f::new(rand_pos_x, rand_pos_y);
+    new_position
+}
+
+fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
     match direction {
         MovementDirection::UP => {
             snake.set_position(Vector2f {
@@ -55,10 +62,12 @@ fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
 }
 
 fn main() {
+    let screen_size = (1200, 900);
+
     // snake
     let mut snake = CircleShape::new(30.0, 30);
     snake.set_fill_color(Color::GREEN);
-
+    snake.set_position(compute_random_postion(screen_size));
     let mut movement_dir = MovementDirection::RIGHT;
 
     // snake
@@ -72,7 +81,7 @@ fn main() {
     // coin
 
     let mut window = RenderWindow::new(
-        (1200, 900),
+        (screen_size.0 as u32, screen_size.1 as u32),
         "snake game",
         Style::default(),
         &Default::default(),
@@ -92,6 +101,7 @@ fn main() {
                 _ => {}
             }
         }
+
         // snake movement
         snake_movement(&mut snake, &movement_dir);
         // snake movement
