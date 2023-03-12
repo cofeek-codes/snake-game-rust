@@ -1,5 +1,7 @@
 use sfml::{
-    graphics::{CircleShape, Color, RenderTarget, RenderWindow, Shape, Transformable},
+    graphics::{
+        CircleShape, Color, RenderTarget, RenderWindow, Shape, Sprite, Texture, Transformable,
+    },
     system::Vector2f,
     window::{Event, Key, Style},
 };
@@ -8,6 +10,13 @@ enum MovementDirection {
     DOWN,
     LEFT,
     RIGHT,
+}
+
+fn create_coin() -> sfml::SfBox<Texture> {
+    let file_path = "/home/cofeek-codes/Рабочий стол/Codes/rustlang/snake-game/assets/coin.png";
+
+    let texture = Texture::from_file(file_path).expect("error creating texture");
+    texture
 }
 fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
     // default
@@ -46,13 +55,21 @@ fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
 }
 
 fn main() {
-    let mut snake = CircleShape::new(50.0, 30);
     // snake
+    let mut snake = CircleShape::new(30.0, 30);
     snake.set_fill_color(Color::GREEN);
 
     let mut movement_dir = MovementDirection::RIGHT;
 
     // snake
+
+    // coin
+    let coin_texture = create_coin();
+
+    let mut coin = Sprite::new();
+    coin.set_texture(&coin_texture, false);
+
+    // coin
 
     let mut window = RenderWindow::new(
         (1200, 900),
@@ -81,6 +98,7 @@ fn main() {
 
         window.clear(Color::CYAN);
         window.draw(&snake);
+        window.draw(&coin);
         window.display();
     }
 }
