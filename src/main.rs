@@ -1,7 +1,7 @@
 use sfml::{
     graphics::{CircleShape, Color, RenderTarget, RenderWindow, Shape, Transformable},
     system::Vector2f,
-    window::{Event, Style},
+    window::{Event, Key, Style},
 };
 enum MovementDirection {
     UP,
@@ -9,25 +9,25 @@ enum MovementDirection {
     LEFT,
     RIGHT,
 }
-fn snake_movement(snake: &mut CircleShape, direction: MovementDirection) {
+fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
     // default
     // move right
-    snake.set_position(Vector2f {
-        x: snake.position().x + 0.1,
-        y: snake.position().y,
-    });
+    // snake.set_position(Vector2f {
+    //     x: snake.position().x + 0.1,
+    //     y: snake.position().y,
+    // });
 
     match direction {
         MovementDirection::UP => {
             snake.set_position(Vector2f {
                 x: snake.position().x,
-                y: snake.position().y + 0.1,
+                y: snake.position().y - 0.1,
             });
         }
         MovementDirection::DOWN => {
             snake.set_position(Vector2f {
                 x: snake.position().x,
-                y: snake.position().y - 0.1,
+                y: snake.position().y + 0.1,
             });
         }
         MovementDirection::LEFT => {
@@ -50,6 +50,8 @@ fn main() {
     // snake
     snake.set_fill_color(Color::GREEN);
 
+    let mut movement_dir = MovementDirection::RIGHT;
+
     // snake
 
     let mut window = RenderWindow::new(
@@ -65,13 +67,16 @@ fn main() {
                 Event::Closed => {
                     window.close();
                 }
+                Event::KeyPressed { code: Key::S, .. } => movement_dir = MovementDirection::DOWN,
+                Event::KeyPressed { code: Key::D, .. } => movement_dir = MovementDirection::RIGHT,
+                Event::KeyPressed { code: Key::A, .. } => movement_dir = MovementDirection::LEFT,
+                Event::KeyPressed { code: Key::W, .. } => movement_dir = MovementDirection::UP,
 
                 _ => {}
             }
         }
         // snake movement
-        let defaut_dir = MovementDirection::RIGHT;
-        snake_movement(&mut snake, defaut_dir);
+        snake_movement(&mut snake, &movement_dir);
         // snake movement
 
         window.clear(Color::CYAN);
