@@ -1,7 +1,8 @@
 use rand::Rng;
 use sfml::{
     graphics::{
-        CircleShape, Color, RenderTarget, RenderWindow, Shape, Sprite, Texture, Transformable,
+        CircleShape, Color, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Texture,
+        Transformable,
     },
     system::Vector2f,
     window::{Event, Key, Style},
@@ -68,6 +69,7 @@ fn main() {
     let mut snake = CircleShape::new(30.0, 30);
     snake.set_fill_color(Color::GREEN);
     snake.set_position(compute_random_postion(screen_size));
+    snake.set_texture_rect(IntRect::new(0, 0, 32, 32));
     let mut movement_dir = MovementDirection::RIGHT;
 
     // snake
@@ -77,6 +79,8 @@ fn main() {
 
     let mut coin = Sprite::new();
     coin.set_texture(&coin_texture, false);
+    coin.set_texture_rect(IntRect::new(0, 0, 32, 32));
+    coin.set_position(compute_random_postion(screen_size));
 
     // coin
 
@@ -105,6 +109,10 @@ fn main() {
         // snake movement
         snake_movement(&mut snake, &movement_dir);
         // snake movement
+
+        // collision
+
+        // collision
 
         window.clear(Color::CYAN);
         window.draw(&snake);
