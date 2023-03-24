@@ -4,10 +4,10 @@ use rand::Rng;
 use sfml::{
     audio::{self, SoundSource},
     graphics::{
-        CircleShape, Color, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Texture,
-        Transformable,
+        CircleShape, Color, Font, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Text,
+        Texture, Transformable,
     },
-    system::Vector2f,
+    system::{Vector2f, Vector2i},
     window::{Event, Key, Style},
 };
 enum MovementDirection {
@@ -87,6 +87,10 @@ fn main() {
 
     // coin
 
+    // score
+    let mut score = 0;
+    // score
+
     // sound
 
     let coin_collection_sound_path =
@@ -97,6 +101,24 @@ fn main() {
     coin_collection_sound.set_volume(30.0);
 
     // sound
+
+    // text rendering
+
+    let font = match Font::from_file(
+        "/home/cofeek-codes/Рабочий стол/Codes/rustlang/snake-game/assets/Roboto-Light.ttf",
+    ) {
+        Some(font) => font,
+        None => {
+            panic!("Failed to read font file!");
+        }
+    };
+    let mut score_text: Text = Text::default();
+    score_text.set_string(&String::from(format!("score: {score}")));
+    score_text.set_font(&font);
+    score_text.set_character_size(16);
+    score_text.set_fill_color(Color::BLACK);
+    score_text.set_position(Vector2f::new(25.0, 25.0));
+    // text rendering
 
     let mut window = RenderWindow::new(
         (screen_size.0 as u32, screen_size.1 as u32),
@@ -132,6 +154,8 @@ fn main() {
         {
             coin.set_position(compute_random_postion(screen_size));
             coin_collection_sound.play();
+            score += 1;
+            score_text.set_string(&String::from(format!("score: {score}")));
         }
 
         // collision
@@ -139,6 +163,7 @@ fn main() {
         window.clear(Color::CYAN);
         window.draw(&snake);
         window.draw(&coin);
+        window.draw(&score_text);
         window.display();
     }
 }
