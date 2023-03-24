@@ -1,8 +1,11 @@
+use std::vec;
+
 use rand::Rng;
 use sfml::{
+    audio::{self, SoundSource},
     graphics::{
-        CircleShape, Color, FloatRect, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite,
-        Texture, Transformable,
+        CircleShape, Color, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Texture,
+        Transformable,
     },
     system::Vector2f,
     window::{Event, Key, Style},
@@ -84,6 +87,17 @@ fn main() {
 
     // coin
 
+    // sound
+
+    let coin_collection_sound_path =
+        "/home/cofeek-codes/Рабочий стол/Codes/rustlang/snake-game/assets/coinCollect.wav";
+    let coin_collection_sound_buffer =
+        audio::SoundBuffer::from_file(coin_collection_sound_path).expect("couldn't load sounds");
+    let mut coin_collection_sound = audio::Sound::with_buffer(&coin_collection_sound_buffer);
+    coin_collection_sound.set_volume(30.0);
+
+    // sound
+
     let mut window = RenderWindow::new(
         (screen_size.0 as u32, screen_size.1 as u32),
         "snake game",
@@ -111,14 +125,13 @@ fn main() {
         // snake movement
 
         // collision
-        let snakeRect: Rect<i32> = Rect::from(snake.texture_rect());
-        let coinRect: Rect<i32> = Rect::from(coin.texture_rect());
 
-        if let Some(collision) = snake
+        if let Some(_) = snake
             .global_bounds()
             .intersection(&coin.global_bounds().into())
         {
-            coin.set_position(compute_random_postion(screen_size))
+            coin.set_position(compute_random_postion(screen_size));
+            coin_collection_sound.play();
         }
 
         // collision
