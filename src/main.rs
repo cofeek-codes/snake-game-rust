@@ -1,8 +1,8 @@
 use rand::Rng;
 use sfml::{
     graphics::{
-        CircleShape, Color, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Texture,
-        Transformable,
+        CircleShape, Color, FloatRect, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite,
+        Texture, Transformable,
     },
     system::Vector2f,
     window::{Event, Key, Style},
@@ -111,6 +111,15 @@ fn main() {
         // snake movement
 
         // collision
+        let snakeRect: Rect<i32> = Rect::from(snake.texture_rect());
+        let coinRect: Rect<i32> = Rect::from(coin.texture_rect());
+
+        if snake.global_bounds().contains(Vector2f::new(
+            coin.global_bounds().left,
+            coin.global_bounds().top,
+        )) {
+            coin.set_position(compute_random_postion(screen_size))
+        }
 
         // collision
 
