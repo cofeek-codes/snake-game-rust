@@ -36,29 +36,29 @@ fn compute_random_postion(screen_size: (i32, i32)) -> sfml::system::Vector2<f32>
     new_position
 }
 
-fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection) {
+fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection, speed: f32) {
     match direction {
         MovementDirection::UP => {
             snake.set_position(Vector2f {
                 x: snake.position().x,
-                y: snake.position().y - 0.1,
+                y: snake.position().y - speed,
             });
         }
         MovementDirection::DOWN => {
             snake.set_position(Vector2f {
                 x: snake.position().x,
-                y: snake.position().y + 0.1,
+                y: snake.position().y + speed,
             });
         }
         MovementDirection::LEFT => {
             snake.set_position(Vector2f {
-                x: snake.position().x - 0.1,
+                x: snake.position().x - speed,
                 y: snake.position().y,
             });
         }
         MovementDirection::RIGHT => {
             snake.set_position(Vector2f {
-                x: snake.position().x + 0.1,
+                x: snake.position().x + speed,
                 y: snake.position().y,
             });
         }
@@ -143,7 +143,9 @@ fn main() {
         }
 
         // snake movement
-        snake_movement(&mut snake, &movement_dir);
+
+        let mut snake_speed: f32 = 0.1;
+        snake_movement(&mut snake, &movement_dir, snake_speed);
         // snake movement
 
         // collision
@@ -156,6 +158,8 @@ fn main() {
             coin_collection_sound.play();
             score += 1;
             score_text.set_string(&String::from(format!("score: {score}")));
+            snake_speed = snake_speed + 0.3;
+            println!("{snake_speed}");
         }
 
         // collision
