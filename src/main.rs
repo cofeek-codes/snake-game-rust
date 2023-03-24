@@ -114,10 +114,10 @@ fn main() {
         let snakeRect: Rect<i32> = Rect::from(snake.texture_rect());
         let coinRect: Rect<i32> = Rect::from(coin.texture_rect());
 
-        if snake.global_bounds().contains(Vector2f::new(
-            coin.global_bounds().left,
-            coin.global_bounds().top,
-        )) {
+        if let Some(collision) = snake
+            .global_bounds()
+            .intersection(&coin.global_bounds().into())
+        {
             coin.set_position(compute_random_postion(screen_size))
         }
 
