@@ -127,8 +127,11 @@ fn main() {
         &Default::default(),
     );
 
+    let mut ui_manager = egui_sfml::SfEgui::new(&window);
+
     while window.is_open() {
         if let Some(event) = window.poll_event() {
+            ui_manager.add_event(&event);
             match event {
                 Event::Closed => {
                     window.close();
@@ -163,6 +166,10 @@ fn main() {
         }
 
         // collision
+
+        // ui
+
+        // ui
 
         window.clear(Color::CYAN);
         window.draw(&snake);
