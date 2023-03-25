@@ -10,6 +10,7 @@ use sfml::{
     system::{Vector2f, Vector2i},
     window::{Event, Key, Style},
 };
+
 enum MovementDirection {
     UP,
     DOWN,
@@ -144,7 +145,7 @@ fn main() {
 
         // snake movement
 
-        let mut snake_speed: f32 = 0.1;
+        let mut snake_speed: f32 = 0.3;
         snake_movement(&mut snake, &movement_dir, snake_speed);
         // snake movement
 
@@ -158,7 +159,7 @@ fn main() {
             coin_collection_sound.play();
             score += 1;
             score_text.set_string(&String::from(format!("score: {score}")));
-            snake_speed = snake_speed + 0.3;
+            snake_speed += 0.3;
             println!("{snake_speed}");
         }
 
