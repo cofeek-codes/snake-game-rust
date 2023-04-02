@@ -1,13 +1,14 @@
-use std::vec;
+use std::process::exit;
 
+use egui::{Pos2, Vec2};
 use rand::Rng;
 use sfml::{
     audio::{self, SoundSource},
     graphics::{
-        CircleShape, Color, Font, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Text,
+        CircleShape, Color, Font, IntRect, RenderTarget, RenderWindow, Shape, Sprite, Text,
         Texture, Transformable,
     },
-    system::{Vector2f, Vector2i},
+    system::Vector2f,
     window::{Event, Key, Style},
 };
 enum MovementDirection {
@@ -147,7 +148,7 @@ fn main() {
 
         // snake movement
 
-        let mut snake_speed: f32 = 0.1;
+        let mut snake_speed: f32 = 0.3;
         snake_movement(&mut snake, &movement_dir, snake_speed);
         // snake movement
 
@@ -168,13 +169,30 @@ fn main() {
         // collision
 
         // ui
+        ui_manager
+            .do_frame(|ctx| {
+                let menu_window = egui::Window::new("menu");
 
-        // ui
+                let menu_window_position =
+                    Pos2::new((screen_size.0 / 2) as f32, (screen_size.1 / 2) as f32);
+
+                menu_window
+                    .default_pos(menu_window_position)
+                    .resizable(true)
+                    .show(ctx, |ui| {
+                        if ui.button("new game").clicked() {}
+                        if ui.button("exit").clicked() {
+                            exit(0);
+                        }
+                    });
+            })
+            .unwrap_or_else(|err| eprintln!("couldnt do ui frame: {err:?}"));
 
         window.clear(Color::CYAN);
         window.draw(&snake);
         window.draw(&coin);
         window.draw(&score_text);
+        ui_manager.draw(&mut window, None);
         window.display();
     }
 }
