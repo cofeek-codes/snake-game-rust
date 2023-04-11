@@ -10,6 +10,7 @@ use sfml::{
     system::Vector2f,
     window::{Event, Key, Style},
 };
+
 enum MovementDirection {
     UP,
     DOWN,
@@ -153,6 +154,7 @@ fn main() {
         // snake movement
 
         let mut snake_speed: f32 = 0.3;
+
         if matches!(game_state, GameState::GAME) {
             snake_movement(&mut snake, &movement_dir, snake_speed);
             // snake movement
@@ -170,6 +172,7 @@ fn main() {
                 snake_speed += 0.3;
                 println!("{snake_speed}");
             }
+
         }
         // collision
 
