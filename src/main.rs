@@ -1,13 +1,13 @@
-use std::vec;
+use std::process::exit;
 
 use rand::Rng;
 use sfml::{
     audio::{self, SoundSource},
     graphics::{
-        CircleShape, Color, Font, IntRect, Rect, RenderTarget, RenderWindow, Shape, Sprite, Text,
+        CircleShape, Color, Font, IntRect, RenderTarget, RenderWindow, Shape, Sprite, Text,
         Texture, Transformable,
     },
-    system::{Vector2f, Vector2i},
+    system::Vector2f,
     window::{Event, Key, Style},
 };
 
@@ -18,11 +18,16 @@ enum MovementDirection {
     RIGHT,
 }
 
+#[derive(Clone, Copy)]
+enum GameState {
+    GAME,
+    MENU,
+}
+
 fn create_coin() -> sfml::SfBox<Texture> {
     let file_path = "/home/cofeek-codes/Рабочий стол/Codes/rustlang/snake-game/assets/coin.png";
 
-    let texture = Texture::from_file(file_path).expect("error creating texture");
-    texture
+    Texture::from_file(file_path).expect("error creating texture")
 }
 
 fn compute_random_postion(screen_size: (i32, i32)) -> sfml::system::Vector2<f32> {
@@ -33,8 +38,7 @@ fn compute_random_postion(screen_size: (i32, i32)) -> sfml::system::Vector2<f32>
     let rand_pos_x: f32 = rand::thread_rng().gen_range(0.0..screen_range.0);
     let rand_pos_y: f32 = rand::thread_rng().gen_range(0.0..screen_range.1);
 
-    let new_position = Vector2f::new(rand_pos_x, rand_pos_y);
-    new_position
+    Vector2f::new(rand_pos_x, rand_pos_y)
 }
 
 fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection, speed: f32) {
@@ -68,7 +72,7 @@ fn snake_movement(snake: &mut CircleShape, direction: &MovementDirection, speed:
 
 fn main() {
     let screen_size = (1200, 900);
-
+    let mut game_state = GameState::MENU;
     // snake
     let mut snake = CircleShape::new(30.0, 30);
     snake.set_fill_color(Color::GREEN);
@@ -79,6 +83,7 @@ fn main() {
     // snake
 
     // coin
+
     let coin_texture = create_coin();
 
     let mut coin = Sprite::new();
@@ -114,7 +119,7 @@ fn main() {
         }
     };
     let mut score_text: Text = Text::default();
-    score_text.set_string(&String::from(format!("score: {score}")));
+    score_text.set_string(&format!("score: {score}"));
     score_text.set_font(&font);
     score_text.set_character_size(16);
     score_text.set_fill_color(Color::BLACK);
@@ -128,8 +133,11 @@ fn main() {
         &Default::default(),
     );
 
+    let mut ui_manager = egui_sfml::SfEgui::new(&window);
+
     while window.is_open() {
         if let Some(event) = window.poll_event() {
+            ui_manager.add_event(&event);
             match event {
                 Event::Closed => {
                     window.close();
@@ -146,29 +154,55 @@ fn main() {
         // snake movement
 
         let mut snake_speed: f32 = 0.3;
-        snake_movement(&mut snake, &movement_dir, snake_speed);
-        // snake movement
 
-        // collision
+        if matches!(game_state, GameState::GAME) {
+            snake_movement(&mut snake, &movement_dir, snake_speed);
+            // snake movement
+            // collision
 
-        if let Some(_) = snake
-            .global_bounds()
-            .intersection(&coin.global_bounds().into())
-        {
-            coin.set_position(compute_random_postion(screen_size));
-            coin_collection_sound.play();
-            score += 1;
-            score_text.set_string(&String::from(format!("score: {score}")));
-            snake_speed += 0.3;
-            println!("{snake_speed}");
+            if snake
+                .global_bounds()
+                .intersection(&coin.global_bounds())
+                .is_some()
+            {
+                coin.set_position(compute_random_postion(screen_size));
+                coin_collection_sound.play();
+                score += 1;
+                score_text.set_string(&format!("score: {score}"));
+                snake_speed += 0.3;
+                println!("{snake_speed}");
+            }
+
         }
-
         // collision
 
-        window.clear(Color::CYAN);
-        window.draw(&snake);
-        window.draw(&coin);
-        window.draw(&score_text);
+        // ui
+        if matches!(game_state, GameState::MENU) {
+            ui_manager
+                .do_frame(|ctx| {
+                    egui::CentralPanel::default().show(ctx, |ui| {
+                        ui.horizontal_centered(|ui| {
+                            ui.vertical_centered(|ui| {
+                                //
+                                if ui.button("new game").clicked() {
+                                    game_state = GameState::GAME;
+                                }
+                                if ui.button("exit").clicked() {
+                                    exit(0);
+                                }
+                            });
+                        });
+                    });
+                })
+                .unwrap_or_else(|err| eprintln!("couldnt do ui frame: {err:?}"));
+        }
+        if matches!(game_state, GameState::GAME) {
+            window.clear(Color::CYAN);
+            window.draw(&snake);
+            window.draw(&coin);
+            window.draw(&score_text);
+        }
+        ui_manager.draw(&mut window, None);
         window.display();
     }
 }
