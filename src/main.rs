@@ -82,14 +82,13 @@ fn main() {
     // snake
 
     // coin
+
     let coin_texture = create_coin();
 
     let mut coin = Sprite::new();
-    if matches!(game_state, GameState::GAME) {
-        coin.set_texture(&coin_texture, false);
-        coin.set_texture_rect(IntRect::new(0, 0, 32, 32));
-        coin.set_position(compute_random_postion(screen_size));
-    }
+    coin.set_texture(&coin_texture, false);
+    coin.set_texture_rect(IntRect::new(0, 0, 32, 32));
+    coin.set_position(compute_random_postion(screen_size));
 
     // coin
 
